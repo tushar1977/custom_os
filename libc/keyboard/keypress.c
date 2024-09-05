@@ -1,10 +1,11 @@
-#include <stdio.h>
-
-#include <kernel/tty.h>
+#define KEYBOARD_PORT 0x60
 unsigned char get_key_press() {
   unsigned char scan_code;
-  asm volatile("inb %1, %0" : "=a"(scan_code) : "Nd"(0x60));
+
+  __asm__ volatile("inb %1, %0" : "=a"(scan_code) : "Nd"(0x60));
+
   return scan_code;
+  ;
 }
 
 unsigned char keycode_to_ascii(unsigned char scan_code) {
@@ -84,66 +85,6 @@ unsigned char keycode_to_ascii(unsigned char scan_code) {
   case 0x0B:
     return '0';
   default:
-    return 0; // Handle unrecognized keycodes
-  }
-}
-
-unsigned int get_len(unsigned char *ch) {
-  unsigned int l = 0;
-
-  while (*ch != '\0') {
-    ch++;
-    l++;
-  }
-
-  return l;
-}
-
-void backspace(unsigned char *buffer) {
-  unsigned int len = get_len(buffer);
-  if (len > 0) {
-    buffer[len - 1] = '\0';
-  }
-}
-
-void kernel_main(void) {
-  terminal_initialize();
-
-  unsigned char keyboard_buffer[256];
-  unsigned int i = 0;
-
-  for (i = 0; i < 256; i++) {
-    keyboard_buffer[i] = '\0';
-  }
-
-  i = 0;
-  while (1) {
-    unsigned char scan_code = 0;
-
-    while (scan_code == 0) {
-      scan_code = get_key_press();
-    }
-
-    unsigned char ascii_char = keycode_to_ascii(scan_code);
-
-    if (scan_code == 0x0E) {
-
-      if (i > 0) {
-
-        backspace(keyboard_buffer);
-        i--;
-
-        // TODO Backspace implement
-      }
-    }
-
-    else if (ascii_char != 0) {
-      keyboard_buffer[i] = ascii_char;
-      i++;
-      putchar(ascii_char);
-    }
-
-    while (get_key_press() == scan_code) {
-    }
+    return 0;
   }
 }
