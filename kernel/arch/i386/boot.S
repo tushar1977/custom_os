@@ -20,21 +20,6 @@ stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
 
-#reserve space for page directory
-.align 4096
-page_directory:
-  .skip 4096
-
-.align 4096
-page_table:
-  .skip 4096
-setup_paging:
-    cli                       
-    # Identity map the first 4 MB of memory
-    mov eax, page_table         # Load page table address into EAX
-    mov ecx, 1024               # 1024 entries in a 4MB page table
-    xor ebx, ebx       
-
 # The kernel entry point.
 .section .text
 .global _start

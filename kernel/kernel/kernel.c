@@ -1,5 +1,5 @@
+#include "device/keypress.h"
 #include <kernel/tty.h>
-#include <keypress.h>
 #include <stdio.h>
 void kernel_main(void) {
   terminal_initialize();
