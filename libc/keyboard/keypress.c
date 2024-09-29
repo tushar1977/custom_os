@@ -1,3 +1,4 @@
+#include "../include/keypress.h"
 #define KEYBOARD_PORT 0x60
 unsigned char get_key_press() {
   unsigned char scan_code;

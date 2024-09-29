@@ -36,6 +36,10 @@ stdio/puts.o \
 stdlib/abort.o \
 string/memcmp.o \
 string/memcpy.o \
+mem/free.o \
+mem/malloc.o \
+mem/calloc.o \
+mem/realloc.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \

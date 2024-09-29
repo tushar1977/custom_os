@@ -12,6 +12,34 @@ static bool print(const char *data, size_t length) {
   return true;
 }
 
+static void print_int(int v) {
+  char buffer[12];
+  int i = 0;
+
+  if (v == 0) {
+    buffer[i++] = '0';
+  }
+
+  if (v < 0) {
+    buffer[i++] = '-';
+    v = -v;
+  }
+
+  while (v > 0) {
+    buffer[i++] = (v % 10) + '0';
+    v /= 10;
+  }
+
+  for (int j = 0; j < i / 2; j++) {
+    char temp = buffer[j];
+    buffer[j] = buffer[i - j - 1];
+    buffer[i - j - 1] = temp;
+  }
+
+  buffer[i] = '\0';
+  print(buffer, i);
+}
+
 int printf(const char *restrict format, ...) {
   va_list parameters;
   va_start(parameters, format);
@@ -59,6 +87,13 @@ int printf(const char *restrict format, ...) {
       if (!print(str, len))
         return -1;
       written += len;
+    } else if (*format == 'd') {
+      format++;
+
+      int c = (int)va_arg(parameters, int);
+      print_int(c);
+      written += sizeof(int);
+
     } else {
       format = format_begun_at;
       size_t len = strlen(format);
