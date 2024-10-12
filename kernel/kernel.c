@@ -1,3 +1,4 @@
+#include "include/cpu/gdt.h"
 #include "include/kernel/tty.h"
 #include "include/keyboard/keypress.h"
 #include "include/memory/memory.h"
@@ -6,6 +7,9 @@
 void kernel_main(void) {
   terminal_initialize();
 
+  initGdt();
+
+  printf("%s", "GDT is done");
   unsigned char keyboard_buffer[256];
 
   unsigned int i = 0;
@@ -13,14 +17,6 @@ void kernel_main(void) {
   for (i = 0; i < 256; i++) {
     keyboard_buffer[i] = '\0';
   }
-
-  int *p = (int *)malloc(3 * sizeof(int));
-
-  *p = 20;
-
-  printf("%d", *p);
-
-  free(p);
 
   i = 0;
 

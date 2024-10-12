@@ -40,6 +40,7 @@ mem/free.o \
 mem/malloc.o \
 mem/calloc.o \
 mem/realloc.o \
+cpu/gdt.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \
