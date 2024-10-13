@@ -1,15 +1,16 @@
-#include "include/cpu/gdt.h"
+#include "include/gdt.h"
+#include "include/idt.h"
 #include "include/kernel/tty.h"
-#include "include/keyboard/keypress.h"
-#include "include/memory/memory.h"
-#include "include/stdio/stdio.h"
+#include "include/keypress.h"
+#include "include/memory.h"
+#include "include/stdio.h"
 
 void kernel_main(void) {
   terminal_initialize();
 
   initGdt();
+  InitIdt();
 
-  printf("%s", "GDT is done");
   unsigned char keyboard_buffer[256];
 
   unsigned int i = 0;

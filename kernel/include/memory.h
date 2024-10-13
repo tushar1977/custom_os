@@ -14,9 +14,9 @@ struct meta_block {
   void *ptr;
   char data[1];
 };
-extern char *brk;  // Declare brk
-extern char *endp; // Declare endp
-extern void *base; // Declare base
+extern char *brk;
+extern char *endp;
+extern void *base;
 void *malloc(size_t size);
 void free(void *ptr);
 

@@ -33,6 +33,8 @@ kernel.o \
 
 OBJS=\
 $(ARCHDIR)/crti.o \
+$(ARCHDIR)/gdt.o \
+$(ARCHDIR)/idt.o \
 $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
 $(ARCHDIR)/crtend.o \
@@ -41,6 +43,8 @@ $(ARCHDIR)/crtn.o \
 LINK_LIST=\
 $(LDFLAGS) \
 $(ARCHDIR)/crti.o \
+$(ARCHDIR)/gdt.o \
+$(ARCHDIR)/idt.o \
 $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
 $(LIBS) \
@@ -48,7 +52,7 @@ $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
 
 .PHONY: all clean install install-headers install-kernel
-.SUFFIXES: .o .c .S
+.SUFFIXES: .o .c .S .asm
 
 all: myos.kernel
 
@@ -63,7 +67,10 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
 
 .S.o:
-	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+	$(CC) -g -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+.asm.o:
+	nasm -f elf32 $< -o $@
 
 clean:
 	rm -f myos.kernel
