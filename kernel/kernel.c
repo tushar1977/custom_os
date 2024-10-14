@@ -1,9 +1,9 @@
 #include "include/gdt.h"
 #include "include/idt.h"
-#include "include/kernel/tty.h"
 #include "include/keypress.h"
 #include "include/memory.h"
 #include "include/stdio.h"
+#include "include/tty.h"
 
 void kernel_main(void) {
   terminal_initialize();
@@ -11,6 +11,7 @@ void kernel_main(void) {
   initGdt();
   InitIdt();
 
+  printf("%d", 1 / 0);
   unsigned char keyboard_buffer[256];
 
   unsigned int i = 0;

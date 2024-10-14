@@ -1,0 +1,10 @@
+
+romimage: file=/usr/share/bochs/BIOS-qemu-latest
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+
+ata0-master: type=cdrom, path=myos.iso,status=inserted
+boot: cdrom
+ cpu: count=1, ips=1000000
+
+display_library: sdl2, options="gui_debug"
+

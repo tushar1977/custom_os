@@ -1,4 +1,5 @@
 #include "../include/idt.h"
+#include "../include/tty.h"
 #include "../include/util.h"
 #include "stdint.h"
 #include <../include/stdio.h>
@@ -130,9 +131,8 @@ void isr_handler(struct InterruptRegisters *regs) {
 
   if (regs->int_no < 32) {
 
-    puts(exception_messages[regs->int_no]);
-    puts("\n");
-    puts("Exception System Halted\n");
+    printf("%s\n", exception_messages[regs->int_no]);
+    printf("Exception System Halted\n");
     for (;;)
       ;
   }

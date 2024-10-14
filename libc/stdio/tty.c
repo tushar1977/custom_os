@@ -1,11 +1,9 @@
+#include "../include/tty.h"
+#include "../include/vga.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <kernel/tty.h>
-
-#include "vga.h"
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -35,8 +33,22 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
   const size_t index = y * VGA_WIDTH + x;
   terminal_buffer[index] = vga_entry(c, color);
 }
+void newline() {
+  terminal_column = 0;
+  if (++terminal_row == VGA_HEIGHT) {
+    terminal_row = 0;
+  }
 
+  for (size_t x = 0; x < VGA_WIDTH; x++) {
+    terminal_putentryat(' ', terminal_color, x, terminal_row);
+  }
+}
 void terminal_putchar(char c) {
+
+  if (c == '\n') {
+    newline();
+    return;
+  }
   unsigned char uc = c;
   terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
   if (++terminal_column == VGA_WIDTH) {
@@ -52,5 +64,6 @@ void terminal_write(const char *data, size_t size) {
 }
 
 void terminal_writestring(const char *data) {
+
   terminal_write(data, strlen(data));
 }

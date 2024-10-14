@@ -1,3 +1,4 @@
+#include "../include/tty.h"
 #include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -93,6 +94,10 @@ int printf(const char *restrict format, ...) {
       int c = (int)va_arg(parameters, int);
       print_int(c);
       written += sizeof(int);
+
+    } else if (*format == '\n') {
+
+      newline();
 
     } else {
       format = format_begun_at;
