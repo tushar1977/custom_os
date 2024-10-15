@@ -140,8 +140,8 @@ void isr_handler(struct InterruptRegisters *regs) {
 
 void *irq_routines[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-void irq_install_handler2(int irq,
-                          void (*handler)(struct InterruptRegisters *r)) {
+void irq_install_handler(int irq,
+                         void (*handler)(struct InterruptRegisters *r)) {
   irq_routines[irq] = handler;
 }
 

@@ -1,4 +1,10 @@
+
+#ifndef IDT_H
+#define IDT_H
+
 #include "stdint.h"
+#include "util.h"
+
 struct InterruptDescriptor32 {
   uint16_t offset_1; // offset bits 0..15
   uint16_t selector; // a code segment selector in GDT or LDT
@@ -70,3 +76,5 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
+
+#endif

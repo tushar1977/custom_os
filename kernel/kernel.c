@@ -1,6 +1,6 @@
 #include "include/gdt.h"
 #include "include/idt.h"
-#include "include/keypress.h"
+#include "include/keyboard.h"
 #include "include/memory.h"
 #include "include/stdio.h"
 #include "include/tty.h"
@@ -11,33 +11,7 @@ void kernel_main(void) {
   initGdt();
   InitIdt();
 
-  printf("%d", 1 / 0);
-  unsigned char keyboard_buffer[256];
-
-  unsigned int i = 0;
-
-  for (i = 0; i < 256; i++) {
-    keyboard_buffer[i] = '\0';
-  }
-
-  i = 0;
-
-  while (1) {
-    unsigned char scan_code = 0;
-
-    while (scan_code == 0) {
-      scan_code = get_key_press();
-    }
-
-    unsigned char ascii_char = keycode_to_ascii(scan_code);
-
-    if (ascii_char != 0) {
-      keyboard_buffer[i] = ascii_char;
-      i++;
-      putchar(ascii_char);
-    }
-
-    while (get_key_press() == scan_code) {
-    }
-  }
+  initKeyboard();
+  for (;;)
+    ;
 }
