@@ -41,9 +41,35 @@ static void print_int(int v) {
   print(buffer, i);
 }
 
+void itoa_hex(int value, char *buffer) {
+  const char *hex_digits = "0123456789ABCDEF";
+  int i = 0;
+  unsigned int temp = (unsigned int)value;
+
+  if (value == 0) {
+    buffer[i++] = '0';
+    buffer[i] = '\0';
+    return;
+  }
+
+  while (temp != 0) {
+    buffer[i++] = hex_digits[temp % 16];
+    temp /= 16;
+  }
+
+  buffer[i] = '\0';
+
+  // Reverse the string to get correct hexadecimal order
+  for (int j = 0; j < i / 2; ++j) {
+    char tmp = buffer[j];
+    buffer[j] = buffer[i - j - 1];
+    buffer[i - j - 1] = tmp;
+  }
+}
 int printf(const char *restrict format, ...) {
   va_list parameters;
   va_start(parameters, format);
+  char buffer[32];
 
   int written = 0;
 
@@ -114,6 +140,20 @@ int printf(const char *restrict format, ...) {
       if (written > 0) {
         written--;
       }
+      break;
+    }
+
+    case 'x': {
+      format++;
+      int num = va_arg(parameters, int);
+      itoa_hex(num, buffer);
+      size_t len = strlen(buffer);
+      if (maxrem < len) {
+        return -1;
+      }
+      if (!print(buffer, len))
+        return -1;
+      written += len;
       break;
     }
 

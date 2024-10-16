@@ -39,6 +39,7 @@ string/memcmp.o \
 string/memcpy.o \
 mem/free.o \
 mem/malloc.o \
+mem/paging.o \
 mem/calloc.o \
 mem/realloc.o \
 cpu/gdt.o \

@@ -19,6 +19,8 @@ SECTIONS
 		*(.text)
 	}
 
+
+
 	/* Read-only data. */
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
@@ -37,6 +39,23 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+
+  _kernel_end = .;
+
+  . += 0xC0000000;
+
+	.higher_half ALIGN(4K) : AT(ADDR(.higher_half) - 0xC0000000)
+	{
+		*(.higher_half .higher_half.*)
+	}
+
+	/* Add a symbol to mark the end of the kernel's virtual address space */
+	. = ALIGN(4K);
+	kernel_virtual_end = .;
+
+
+
+  
 
 	/* The compiler may produce other sections, put them in the proper place in
 	   in this file, if you'd like to include them in the final kernel. */
