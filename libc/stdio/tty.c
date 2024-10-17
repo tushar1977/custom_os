@@ -62,10 +62,9 @@ void backspace() {
     terminal_column--;
   }
 
-  const size_t index = terminal_row * VGA_WIDTH + terminal_column;
-  terminal_buffer[index] = vga_entry(' ', terminal_color);
+  size_t index = terminal_row * VGA_WIDTH + terminal_column;
+  terminal_buffer[index] = ' ' | (terminal_color << 8);
 }
-
 void terminal_putchar(char c) {
 
   if (c == '\n') {

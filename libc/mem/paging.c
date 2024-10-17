@@ -1,21 +1,34 @@
-#include "../include/multiboot.h"
-#include "../include/stdio.h"
+#include "../include/paging.h"
+#include "../include/util.h"
 #include "stdint.h"
+#include <stddef.h>
 
-void initMemory(struct multiboot_info *bootInfo) {
-  unsigned int i = 0;
+uint8_t physicalMemoryBitmap[NUM_PAGE_FRAMS / 8];
 
-  while (i < bootInfo->mmap_length) {
-    struct multiboot_mmap_entry *mmmt =
-        (struct multiboot_mmap_entry *)(bootInfo->mmap_addr + i);
+static uint32_t pageDirs[NUM_PAGE_DIRS][1024] __attribute__((aligned(4096)));
+static uint8_t pageDirsUsed[NUM_PAGE_DIRS];
 
-    printf("Low add: %x | High add: %x | Low length: %x | High Length: %x | "
-           "size: %x | Type: %x\n",
-           mmmt->addr_low, mmmt->addr_high, mmmt->len_low, mmmt->len_high,
-           mmmt->size, mmmt->type);
+void initMemory(uint32_t memHigh, uint32_t physicalStart) {
+  initial_page_dir[0] = 0;
+  invalidate(0);
 
-    // Move the index by the size of the mmap entry (which is mmmt->size + 4
-    // bytes for the size field itself)
-    i += mmmt->size + sizeof(mmmt->size);
-  }
+  initial_page_dir[1023] = ((uint32_t)initial_page_dir - KERNEL_START) |
+                           PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE;
+  invalidate(0xFFFFF000);
+
+  pmm_init(physicalStart, memHigh);
+
+  memset(pageDirs, 0, 0x1000 * NUM_PAGE_DIRS);
+  memset(pageDirsUsed, 0, NUM_PAGE_DIRS);
+}
+
+void invalidate(uint32_t vadd) { asm volatile("invlpg %0" : : "m"(vadd)); }
+
+void pmm_init(uint32_t memLow, uint32_t memHigh) {
+
+  pageFrameMin = CEIL_DIV(memLow, 0x1000);
+  pageFrameMax = memHigh / 0x1000;
+  totalAlloc = 0;
+
+  memset(physicalMemoryBitmap, 0, sizeof(physicalMemoryBitmap));
 }

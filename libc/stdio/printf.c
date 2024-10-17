@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define MAX_HEX_DIGITS 8                     // For 32-bit int
+#define HEX_BUFFER_SIZE (MAX_HEX_DIGITS + 3) // +3 for "0x" and null terminator
 static bool print(const char *data, size_t length) {
   const unsigned char *bytes = (const unsigned char *)data;
   for (size_t i = 0; i < length; i++)
@@ -41,30 +43,36 @@ static void print_int(int v) {
   print(buffer, i);
 }
 
-void itoa_hex(int value, char *buffer) {
+void itoa_hex(int value, char *buffer, size_t buffer_size) {
   const char *hex_digits = "0123456789ABCDEF";
-  int i = 0;
   unsigned int temp = (unsigned int)value;
+  int i = 0;
 
+  // Add "0x" prefix
+  buffer[i++] = '0';
+  buffer[i++] = 'x';
+
+  // Handle zero separately
   if (value == 0) {
     buffer[i++] = '0';
     buffer[i] = '\0';
     return;
   }
 
-  while (temp != 0) {
-    buffer[i++] = hex_digits[temp % 16];
+  // Convert to hex digits
+  char hex_part[MAX_HEX_DIGITS + 1];
+  int j = 0;
+  while (temp != 0 && j < MAX_HEX_DIGITS) {
+    hex_part[j++] = hex_digits[temp % 16];
     temp /= 16;
   }
 
-  buffer[i] = '\0';
-
-  // Reverse the string to get correct hexadecimal order
-  for (int j = 0; j < i / 2; ++j) {
-    char tmp = buffer[j];
-    buffer[j] = buffer[i - j - 1];
-    buffer[i - j - 1] = tmp;
+  // Reverse and copy hex digits
+  while (--j >= 0 && i < buffer_size - 1) {
+    buffer[i++] = hex_part[j];
   }
+
+  buffer[i] = '\0';
 }
 int printf(const char *restrict format, ...) {
   va_list parameters;
@@ -107,6 +115,14 @@ int printf(const char *restrict format, ...) {
       written++;
       break;
     }
+    case '\b': {
+      if (written > 0) {
+        written--;
+        backspace();
+      }
+      format++; // Move to next character after processing
+      break;
+    }
     case 's': {
       format++;
       const char *str = va_arg(parameters, const char *);
@@ -134,24 +150,16 @@ int printf(const char *restrict format, ...) {
       break;
     }
 
-    case '\b': {
-      format++;
-      backspace();
-      if (written > 0) {
-        written--;
-      }
-      break;
-    }
-
     case 'x': {
       format++;
       int num = va_arg(parameters, int);
-      itoa_hex(num, buffer);
-      size_t len = strlen(buffer);
+      char hex_buffer[HEX_BUFFER_SIZE];
+      itoa_hex(num, hex_buffer, HEX_BUFFER_SIZE);
+      size_t len = strlen(hex_buffer);
       if (maxrem < len) {
         return -1;
       }
-      if (!print(buffer, len))
+      if (!print(hex_buffer, len))
         return -1;
       written += len;
       break;
