@@ -1,8 +1,9 @@
 #include "../include/paging.h"
+#include "../include/multiboot.h"
 #include "../include/util.h"
 #include "stdint.h"
+#include "stdio.h"
 #include <stddef.h>
-
 uint8_t physicalMemoryBitmap[NUM_PAGE_FRAMS / 8];
 
 static uint32_t pageDirs[NUM_PAGE_DIRS][1024] __attribute__((aligned(4096)));

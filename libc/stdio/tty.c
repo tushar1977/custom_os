@@ -71,6 +71,10 @@ void terminal_putchar(char c) {
     newline();
     return;
   }
+  if (c == '\b') {
+    backspace();
+    return;
+  }
   unsigned char uc = c;
   terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
   if (++terminal_column == VGA_WIDTH) {

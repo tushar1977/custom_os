@@ -1,12 +1,11 @@
 # ROM images
-romimage: file=/usr/share/bochs/BIOS-bochs-latest
-vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
 
 # Boot device configuration
 ata0-slave: type=cdrom, path=custom_os.iso, status=inserted
 boot: cdrom
 
-# Display configuration
 display_library: x, options="gui_debug"
 
 

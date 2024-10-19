@@ -115,14 +115,7 @@ int printf(const char *restrict format, ...) {
       written++;
       break;
     }
-    case '\b': {
-      if (written > 0) {
-        written--;
-        backspace();
-      }
-      format++; // Move to next character after processing
-      break;
-    }
+
     case 's': {
       format++;
       const char *str = va_arg(parameters, const char *);
@@ -141,12 +134,6 @@ int printf(const char *restrict format, ...) {
       int c = (int)va_arg(parameters, int);
       print_int(c);
       written += sizeof(int);
-      break;
-    }
-
-    case '\n': {
-      newline();
-      written++;
       break;
     }
 
