@@ -3,9 +3,9 @@
 #include "include/keyboard.h"
 #include "include/multiboot.h"
 #include "include/paging.h"
+#include "include/serial.h"
 #include "include/tty.h"
 #include <stdio.h>
-
 void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   terminal_initialize();
 
@@ -21,7 +21,7 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
 
   initMemory(bootInfo->mem_upper * 1024, physicsStart);
   printf("Memory allocation done\n");
-  terminal_writestring("Paging is done!\n");
+  test_serial();
   for (;;)
     ;
 }

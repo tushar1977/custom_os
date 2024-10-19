@@ -32,7 +32,8 @@ $(ARCH_FREEOBJS) \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/tty.o \
-keyboard/keyboard.o \
+drivers/keyboard.o \
+drivers/serial.o \
 stdio/puts.o \
 stdlib/abort.o \
 string/memcmp.o \

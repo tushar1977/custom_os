@@ -1,10 +1,10 @@
 #include "../include/tty.h"
+#include "../include/string.h"
+#include "../include/util.h"
 #include "../include/vga.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
-
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 static uint16_t *const VGA_MEMORY = (uint16_t *)0xB8000;
@@ -25,6 +25,7 @@ void terminal_initialize(void) {
       terminal_buffer[index] = vga_entry(' ', terminal_color);
     }
   }
+  update_cursor(0, 0);
 }
 void scrollUp() {
   for (size_t y = 1; y < VGA_HEIGHT; y++) {
@@ -42,6 +43,15 @@ void scrollUp() {
 
 void terminal_setcolor(uint8_t color) { terminal_color = color; }
 
+void update_cursor(int x, int y) {
+  uint16_t pos = y * VGA_WIDTH + x;
+
+  outPortB(0x3D4, 0x0F);
+  outPortB(0x3D5, (uint8_t)(pos & 0xFF));
+  outPortB(0x3D4, 0x0E);
+  outPortB(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
+
 void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
   const size_t index = y * VGA_WIDTH + x;
   terminal_buffer[index] = vga_entry(c, color);
@@ -52,6 +62,8 @@ void newline() {
     scrollUp();
     terminal_row = VGA_HEIGHT - 1;
   }
+
+  update_cursor(terminal_column, terminal_row);
 }
 
 void backspace() {
@@ -64,6 +76,7 @@ void backspace() {
 
   size_t index = terminal_row * VGA_WIDTH + terminal_column;
   terminal_buffer[index] = ' ' | (terminal_color << 8);
+  update_cursor(terminal_column, terminal_row);
 }
 void terminal_putchar(char c) {
 
@@ -75,6 +88,8 @@ void terminal_putchar(char c) {
     backspace();
     return;
   }
+
+  update_cursor(terminal_column, terminal_row);
   unsigned char uc = c;
   terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
   if (++terminal_column == VGA_WIDTH) {
