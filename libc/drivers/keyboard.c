@@ -107,6 +107,13 @@ void keyboardHandler(struct InterruptRegisters *regs) {
       capsOn = false;
     }
     break;
+  case 28:
+    if (press == 0) {
+      newline();
+
+      printf("tusos--> ");
+    }
+
   case 58:
     if (!capsLock && press == 0) {
       capsLock = true;
@@ -116,8 +123,12 @@ void keyboardHandler(struct InterruptRegisters *regs) {
     break;
   default:
     if (press == 0) {
-      if (capsOn || capsLock) {
+      if (capsOn) {
         printf("%c", uppercase[scanCode]);
+      } else if (capsLock) {
+        printf("%c", (scanCode >= 'a' && scanCode <= 'z')
+                         ? uppercase[scanCode]
+                         : lowercase[scanCode]);
       } else {
         printf("%c", lowercase[scanCode]);
       }

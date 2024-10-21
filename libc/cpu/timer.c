@@ -1,6 +1,6 @@
+#include "../include/timer.h"
 #include "../include/idt.h"
 #include "../include/stdio.h"
-#include "../include/time.h"
 #include "../include/util.h"
 #include "stdint.h"
 

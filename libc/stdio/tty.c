@@ -67,14 +67,15 @@ void newline() {
 }
 
 void backspace() {
-  if (terminal_column == 0 && terminal_row > 0) {
-    terminal_row--;
-    terminal_column = VGA_WIDTH - 1;
-  } else if (terminal_column > 0) {
-    terminal_column--;
+  if (terminal_column == 9) {
+    size_t index = terminal_row * VGA_WIDTH + (++terminal_column);
+    terminal_buffer[index] = ' ' | (terminal_color << 8);
   }
-
-  size_t index = terminal_row * VGA_WIDTH + terminal_column;
+  if (terminal_column == 0 && terminal_row != 0) {
+    terminal_row--;
+    terminal_column = VGA_WIDTH;
+  }
+  size_t index = terminal_row * VGA_WIDTH + (--terminal_column);
   terminal_buffer[index] = ' ' | (terminal_color << 8);
   update_cursor(terminal_column, terminal_row);
 }
