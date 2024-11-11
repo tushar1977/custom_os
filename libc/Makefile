@@ -38,6 +38,7 @@ stdio/puts.o \
 stdlib/abort.o \
 string/memcmp.o \
 string/memcpy.o \
+fs/vfs.o \
 mem/free.o \
 mem/malloc.o \
 mem/paging.o \

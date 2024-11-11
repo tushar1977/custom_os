@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+int strcmp(const char *s1, const char *s2);
 int memcmp(const void *, const void *, size_t);
 void *memcpy(void *__restrict, const void *__restrict, size_t);
 void *memmove(void *, const void *, size_t);

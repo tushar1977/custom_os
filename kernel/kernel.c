@@ -5,6 +5,7 @@
 #include "include/paging.h"
 #include "include/serial.h"
 #include "include/tty.h"
+#include "include/vfs.h"
 #include <stdio.h>
 void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   terminal_initialize();
@@ -18,6 +19,12 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   uint32_t physicsStart = (mod1 + 0xFFF) & ~0xFFF;
 
   initMemory(bootInfo->mem_upper * 1024, physicsStart);
+  VFS *vfs;
+  init_vfs(vfs);
+  printf("VFS init!\n");
+  create_file(vfs, "tushar", "this is my first file");
+  printf("file done!\n");
+  printf("%s\n", read_file(vfs, "tushar"));
   printf("######################################\n");
   printf("######### WELCOME TO MY OS ###########\n");
   printf("######################################\n");
