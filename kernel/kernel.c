@@ -1,6 +1,7 @@
 #include "include/gdt.h"
 #include "include/idt.h"
 #include "include/keyboard.h"
+#include "include/memory.h"
 #include "include/multiboot.h"
 #include "include/paging.h"
 #include "include/serial.h"
@@ -21,14 +22,13 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   initMemory(bootInfo->mem_upper * 1024, physicsStart);
   VFS *vfs;
   init_vfs(vfs);
-  printf("VFS init!\n");
-  create_file(vfs, "tushar", "this is my first file");
-  printf("file done!\n");
-  printf("%s\n", read_file(vfs, "tushar"));
+  create_file(vfs, "tuhsar.txt", "fjfjf");
+  create_file(vfs, "tuhsar2.txt", "fjfjf");
   printf("######################################\n");
   printf("######### WELCOME TO MY OS ###########\n");
   printf("######################################\n");
   printf("tusos--> ");
+
   for (;;)
     ;
 }

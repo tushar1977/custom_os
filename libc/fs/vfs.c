@@ -1,4 +1,5 @@
 #include "../include/vfs.h"
+#include "../include/stdio.h"
 #include "../include/string.h"
 
 void init_vfs(VFS *vfs) { vfs->file_count = 0; }
@@ -23,4 +24,24 @@ const char *read_file(VFS *vfs, const char *filename) {
   }
 
   return "notp";
+}
+
+void delete_file(VFS *vfs, const char *filename) {
+
+  File replace;
+
+  for (int i = 0; i < vfs->file_count; i++) {
+    if (strcmp(vfs->file[i].name, filename) == 0) {
+      vfs->file[i] = replace;
+      vfs->file_count--;
+    }
+  }
+}
+
+void display_files(VFS *vfs) {
+
+  for (int i = 0; i < vfs->file_count; i++) {
+    printf("%s", vfs->file[i].name);
+    printf(" ");
+  }
 }

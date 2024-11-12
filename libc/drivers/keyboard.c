@@ -1,12 +1,18 @@
 #include "../include/keyboard.h"
 #include "../include/idt.h"
 #include "../include/stdio.h"
+#include "../include/string.h"
 #include "../include/tty.h"
+#include "../include/vfs.h"
+#include "../include/vga.h"
 #include "stdint.h"
 #include <stdbool.h>
 
 bool capsOn;
 bool capsLock;
+
+VFS *vfs;
+char text[100] = {0};
 
 const uint32_t UNKNOWN = 0xFFFFFFFF;
 const uint32_t ESC = 0xFFFFFFFF - 1;
@@ -78,6 +84,16 @@ const uint32_t uppercase[128] = {
     UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN,
     UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN};
 
+void clear() {
+  uint8_t p = 0;
+  // Loop through the text buffer and set each character to '\0' (null
+  // terminator)
+  while (text[p] != '\0') {
+    text[p] = '\0';
+    p++;
+  }
+}
+
 void keyboardHandler(struct InterruptRegisters *regs) {
   char scanCode = inPortB(0x60) & 0x7F; // What key is pressed
   char press = inPortB(0x60) & 0x80;    // Press down, or released
@@ -107,13 +123,32 @@ void keyboardHandler(struct InterruptRegisters *regs) {
       capsOn = false;
     }
     break;
-  case 28:
+  case 28: // Enter key
     if (press == 0) {
       newline();
 
-      printf("tusos--> ");
-    }
+      // Check for 'clear' command
+      if (strcmp("clear", text) == 0) {
+        clear();
+      }
 
+      // Check for 'ls' command
+      else if (strcmp("ls", text) == 0) {
+        printf("__FILES__\n");
+        display_files(vfs);
+        printf("\n");
+      }
+
+      // Handle unknown commands
+      else {
+        printf("Unknown command: %s\n", text);
+      }
+
+      // Clear the text buffer after handling command
+      clear();
+      printf("tusos--> "); // Prompt for the next command
+    }
+    break;
   case 58:
     if (!capsLock && press == 0) {
       capsLock = true;
@@ -123,14 +158,26 @@ void keyboardHandler(struct InterruptRegisters *regs) {
     break;
   default:
     if (press == 0) {
-      if (capsOn) {
-        printf("%c", uppercase[scanCode]);
-      } else if (capsLock) {
-        printf("%c", (scanCode >= 'a' && scanCode <= 'z')
-                         ? uppercase[scanCode]
-                         : lowercase[scanCode]);
-      } else {
-        printf("%c", lowercase[scanCode]);
+      if (scanCode >= 0 && scanCode < 128) {
+        if (capsOn) {
+          printf("%c", uppercase[scanCode]);
+        } else if (capsLock) {
+          printf("%c", (scanCode >= 'a' && scanCode <= 'z')
+                           ? uppercase[scanCode]
+                           : lowercase[scanCode]);
+        } else {
+          printf("%c", lowercase[scanCode]);
+        }
+
+        int i = 0;
+        while (text[i] != '\0' && i < sizeof(text) - 1) {
+          i++;
+        }
+        if (i < sizeof(text) - 1) {
+          text[i] =
+              (capsOn || capsLock) ? uppercase[scanCode] : lowercase[scanCode];
+          text[i + 1] = '\0'; // Null-terminate the string
+        }
       }
     }
   }
