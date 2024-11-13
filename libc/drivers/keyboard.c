@@ -7,6 +7,7 @@
 #include "../include/vga.h"
 #include "stdint.h"
 #include <stdbool.h>
+#include <string.h>
 
 bool capsOn;
 bool capsLock;
@@ -48,6 +49,10 @@ const uint32_t NONE = 0xFFFFFFFF - 30;
 const uint32_t ALTGR = 0xFFFFFFFF - 31;
 const uint32_t NUMLCK = 0xFFFFFFFF - 32;
 
+char *filename = "";
+void slice(const char *str, char *result, size_t start, size_t end) {
+  memcpy(result, str + start, end - start);
+}
 const uint32_t lowercase[128] = {
     UNKNOWN, ESC,     '1',     '2',     '3',     '4',     '5',     '6',
     '7',     '8',     '9',     '0',     '-',     '=',     '\b',    '\t',
@@ -97,6 +102,7 @@ void clear() {
 void keyboardHandler(struct InterruptRegisters *regs) {
   char scanCode = inPortB(0x60) & 0x7F; // What key is pressed
   char press = inPortB(0x60) & 0x80;    // Press down, or released
+  // printf("%d", scanCode);
 
   switch (scanCode) {
   case 1:
@@ -123,29 +129,32 @@ void keyboardHandler(struct InterruptRegisters *regs) {
       capsOn = false;
     }
     break;
-  case 28: // Enter key
+  case 28:
     if (press == 0) {
       newline();
 
-      // Check for 'clear' command
       if (strcmp("clear", text) == 0) {
-        clear();
+        Reset();
       }
 
-      // Check for 'ls' command
       else if (strcmp("ls", text) == 0) {
         printf("__FILES__\n");
         display_files(vfs);
         printf("\n");
       }
 
-      // Handle unknown commands
-      else {
+      else if (memcmp("mfile ", text, 6) == 0) {
+        slice(text, filename, 6, strlen(text) - 1);
+        create_file(vfs, filename, "");
+        printf("Done created %s\n", filename);
+      }
+
+      else if (scanCode != 28) {
         printf("Unknown command: %s\n", text);
       }
 
-      // Clear the text buffer after handling command
       clear();
+
       printf("tusos--> "); // Prompt for the next command
     }
     break;
@@ -176,7 +185,7 @@ void keyboardHandler(struct InterruptRegisters *regs) {
         if (i < sizeof(text) - 1) {
           text[i] =
               (capsOn || capsLock) ? uppercase[scanCode] : lowercase[scanCode];
-          text[i + 1] = '\0'; // Null-terminate the string
+          text[i + 1] = '\0';
         }
       }
     }

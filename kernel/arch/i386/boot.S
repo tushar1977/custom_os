@@ -77,8 +77,8 @@ enable_paging:
     ret
 higher_half:
     movl $stack_top, %esp       # Set stack pointer to the top of the stack
-    pushl %ebx                  # Push ebx onto the stack
-    pushl %eax                  # Push eax onto the stack
+    pushl %ebx                  
+    pushl %eax                 
     xorl %ebp, %ebp             # Clear ebp (set it to 0)
     
 	  call kernel_main

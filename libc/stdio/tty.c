@@ -41,6 +41,18 @@ void scrollUp() {
   }
 }
 
+void Reset() {
+  terminal_row = 0;
+  terminal_column = 0;
+
+  for (uint16_t y = 0; y < VGA_HEIGHT; y++) {
+    for (uint16_t x = 0; x < VGA_WIDTH; x++) {
+
+      terminal_buffer[y * VGA_WIDTH + x] = ' ' | (terminal_color << 8);
+    }
+  }
+}
+
 void terminal_setcolor(uint8_t color) { terminal_color = color; }
 
 void update_cursor(int x, int y) {
