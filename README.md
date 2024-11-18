@@ -1,12 +1,34 @@
-A Hobby project . Main aim is to learn OS concepts by pratical approach
+# Hobby OS Project
 
-Current Features(Very early) :-
+This is a personal project aimed at deepening my understanding of **operating system concepts** through a practical, hands-on approach.
 
-Mememory Managment PS2/Keyboard inputs
+## Current Features (Early Development)
 
-Currently Working on :- GDT, Paging, A simple counter bash
+- **Memory Management**  
+- **PS/2 Keyboard Input**  
+- **Virtual Filesystem**  
+- **CLI Commands**  
+  - `ls`: **List files and directories**  
+  - `mfile`: **Create a file**  
+  - `clear`: **Clear the console**  
 
-To run locally :-
+## Work in Progress
 
-clone the repo
-run "./run_os" script (This will run directly the kernal file on qemu)
+### Adding More CLI Commands  
+Extending the shell with useful commands.
+
+## Project Goals
+- **Learn and implement core OS concepts**
+- **Focusing on low-level programming, system calls, and hardware interaction.**
+- **Hands-on experience with OS internals**
+- **By building and debugging features like memory management, process scheduling, and filesystems.**
+
+## Getting Started
+
+**To run the OS locally:**
+
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/tushar1977/custom_os
+   cd custom_os
+   ./run_os.sh
