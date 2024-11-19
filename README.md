@@ -8,7 +8,10 @@ https://github.com/user-attachments/assets/b6d722be-e0fe-403d-998a-c35c92656104
 This is a personal project aimed at deepening my understanding of **operating system concepts** through a practical, hands-on approach.
 
 ## Current Features (Early Development)
-
+- **GDT**
+- **IDT**
+- **Serial**
+- **VGA**
 - **Memory Management**  
 - **PS/2 Keyboard Input**  
 - **Virtual Filesystem**  
@@ -20,10 +23,13 @@ This is a personal project aimed at deepening my understanding of **operating sy
 ## Work in Progress
 
 ### Adding More CLI Commands  
-Extending the shell with useful commands.
+- Extending the shell with useful commands.
+- Working on EXT2 File system type
 
 ## Project Goals
 - **Learn and implement core OS concepts**
+- **Implement Character Rendering**
+- **Implement Graphic Drivers**
 - **Focusing on low-level programming, system calls, and hardware interaction.**
 - **Hands-on experience with OS internals**
 - **By building and debugging features like memory management, process scheduling, and filesystems.**
