@@ -46,6 +46,7 @@ mem/calloc.o \
 mem/realloc.o \
 cpu/gdt.o \
 cpu/util.o \
+cpu/syscall.o \
 cpu/idt.o \
 string/memmove.o \
 string/memset.o \

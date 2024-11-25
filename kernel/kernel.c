@@ -5,6 +5,7 @@
 #include "include/multiboot.h"
 #include "include/paging.h"
 #include "include/serial.h"
+#include "include/syscall.h"
 #include "include/tty.h"
 #include "include/vfs.h"
 #include <stdio.h>
@@ -14,6 +15,7 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   initGdt();
   InitIdt();
 
+  syscall_init();
   initKeyboard();
 
   uint32_t mod1 = *(uint32_t *)(bootInfo->mods_addr + 4);
@@ -23,6 +25,7 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   VFS *vfs;
   init_vfs(vfs);
   create_file(vfs, "tuhsar.txt", "fjfjf");
+
   create_file(vfs, "tuhsar2.txt", "fjfjf");
   printf("######################################\n");
   printf("######### WELCOME TO MY OS ###########\n");

@@ -143,8 +143,8 @@ void keyboardHandler(struct InterruptRegisters *regs) {
         printf("\n");
       }
 
-      else if (memcmp("mfile ", text, 6) == 0) {
-        slice(text, filename, 6, strlen(text) - 1);
+      else if (memcmp("mfile", text, 5) == 0) {
+        slice(text, filename, 6, strlen(text));
         create_file(vfs, filename, "");
         printf("Done created %s\n", filename);
       }
