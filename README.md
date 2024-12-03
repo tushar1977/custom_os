@@ -14,7 +14,9 @@ This is a personal project aimed at deepening my understanding of **operating sy
 - **VGA**
 - **Memory Management**  
 - **PS/2 Keyboard Input**  
-- **Virtual Filesystem**  
+- **Virtual Filesystem**
+- **Kernel Level SpinLocks**
+- **Debugging Info**
 - **CLI Commands**  
   - `ls`: **List files and directories**  
   - `mfile`: **Create a file**  
