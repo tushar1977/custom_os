@@ -44,6 +44,8 @@ mem/malloc.o \
 mem/paging.o \
 mem/calloc.o \
 mem/realloc.o \
+processor/spinlock.o \
+processor/kprint.o \
 cpu/gdt.o \
 cpu/util.o \
 cpu/syscall.o \

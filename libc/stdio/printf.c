@@ -1,8 +1,9 @@
+#include "../include/spinlock.h"
+#include "../include/stdio.h"
 #include "../include/tty.h"
 #include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <string.h>
 
 #define MAX_HEX_DIGITS 8                     // For 32-bit int
