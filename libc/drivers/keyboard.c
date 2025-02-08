@@ -51,7 +51,7 @@ const uint32_t NUMLCK = 0xFFFFFFFF - 32;
 
 char *filename = "";
 void slice(const char *str, char *result, size_t start, size_t end) {
-  memcpy(result, str + start, end - start);
+  memcpy(result, str + start, end - start + 1);
 }
 const uint32_t lowercase[128] = {
     UNKNOWN, ESC,     '1',     '2',     '3',     '4',     '5',     '6',
@@ -100,8 +100,8 @@ void clear() {
 }
 
 void keyboardHandler(struct InterruptRegisters *regs) {
-  char scanCode = inPortB(0x60) & 0x7F; // What key is pressed
-  char press = inPortB(0x60) & 0x80;    // Press down, or released
+  char scanCode = inPortB(0x60) & 0x7F;
+  char press = inPortB(0x60) & 0x80;
   // printf("%d", scanCode);
 
   switch (scanCode) {
@@ -122,7 +122,6 @@ void keyboardHandler(struct InterruptRegisters *regs) {
   case 88:
     break;
   case 42:
-    // shift key
     if (press == 0) {
       capsOn = true;
     } else {
@@ -155,7 +154,7 @@ void keyboardHandler(struct InterruptRegisters *regs) {
 
       clear();
 
-      printf("tusos--> "); // Prompt for the next command
+      printf("tusos--> ");
     }
     break;
   case 58:

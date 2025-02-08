@@ -41,6 +41,8 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   kstatusf("Creating file: tuhsar.txt..\n");
   create_file(vfs, "tuhsar.txt", "fjfjf");
 
+  syscall_init();
+
   kstatusf("Creating file: tuhsar2.txt..\n");
   create_file(vfs, "tuhsar2.txt", "fjfjf");
 
