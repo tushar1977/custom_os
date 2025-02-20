@@ -1,5 +1,7 @@
 #ifndef __VFS_H__
 #define __VFS_H__
+#include <stdint.h>
+#include <stdio.h>
 #define MAX_FILENAME 256
 #define MAX_PATH 4096
 #define MAX_FILES 100

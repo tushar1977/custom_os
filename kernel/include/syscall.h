@@ -6,7 +6,7 @@
 enum SyscallNumbers { SYS_CREATE_FILE = 0, SYS_PRINTF = 1 };
 
 extern void *syscall_table[NUM_SYSCALLS];
-void syscall_init();
+void syscall_init(void);
 
 void syscall_dispatcher(struct InterruptRegisters *regs);
 void _exit();
