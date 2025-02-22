@@ -52,6 +52,7 @@ cpu/syscall.o \
 cpu/idt.o \
 string/memmove.o \
 string/memset.o \
+string/memstr.o \
 string/strlen.o \
 
 HOSTEDOBJS=\
