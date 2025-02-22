@@ -19,8 +19,9 @@ This is a personal project aimed at deepening my understanding of **operating sy
 - **Debugging Info**
 - **CLI Commands**  
   - `ls`: **List files and directories**  
-  - `mfile`: **Create a file**  
-  - `clear`: **Clear the console**  
+  - `mfile [FILENAME]`: **Create a file**  
+  - `clear`: **Clear the console**
+  - `echo [DATA] [FILENAME]`: **Overwrite/Write data on a file**  
 
 ## Work in Progress
 
