@@ -11,6 +11,33 @@
 #include "include/tty.h"
 #include "include/vfs.h"
 
+void test_vfs() {
+
+  Spinlock file_lock;
+  atomic_flag_clear(&file_lock.flag);
+  char *name = "tushar.txt";
+  char *data = "this is test data \n"
+               "!@#$%^&*()_+-=[]{};':\"\\|,.<>/\n?aBcDeFgHiJkLmNoPqRsTuVwXyZ";
+
+  char *new_data = "fjjjjjjjffjffirr\njdjhrnfn2i78930;";
+
+  kstatusf("Creating file: tuhsar.txt..\n");
+  spinlock_aquire(&file_lock);
+  create_file(name, data);
+  spinlock_release(&file_lock);
+
+  syscall_init();
+
+  printf("Loading data for file\n");
+  display_file_content(name);
+
+  printf("Inserting data into file");
+  insert_data(name, new_data);
+
+  printf("Loading data for file\n");
+  display_file_content(name);
+}
+
 void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
   terminal_initialize();
   kstatusf("Terminal initialized..\n");
@@ -34,24 +61,11 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
            bootInfo->mem_upper, physicsStart);
   initMemory(bootInfo->mem_upper * 1024, physicsStart);
 
-  VFS *vfs;
-  init_vfs(vfs);
   kstatusf("Virtual File System Initialized..\n");
 
-  Spinlock file_lock;
-  atomic_flag_clear(&file_lock.flag);
-
-  kstatusf("Creating file: tuhsar.txt..\n");
-  spinlock_aquire(&file_lock);
-  create_file(vfs, "tuhsar.txt", "fjfjf");
-  spinlock_release(&file_lock);
-
-  syscall_init();
-
-  kstatusf("Creating file: tuhsar2.txt..\n");
-  spinlock_aquire(&file_lock);
-  create_file(vfs, "tuhsar2.txt", "fjfjf");
-  spinlock_release(&file_lock);
+  init_vfs();
+  test_vfs();
+  kstatusf("Virtual File System is tested !!!!..\n");
 
   printf("tusos--> ");
 
