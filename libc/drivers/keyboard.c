@@ -7,12 +7,10 @@
 #include "../include/vga.h"
 #include "stdint.h"
 #include <stdbool.h>
-#include <string.h>
 
 bool capsOn;
 bool capsLock;
 
-VFS *vfs;
 char text[100] = {0};
 
 const uint32_t UNKNOWN = 0xFFFFFFFF;
@@ -142,9 +140,37 @@ void keyboardHandler(struct InterruptRegisters *regs) {
         printf("\n");
       }
 
+      else if (memcmp("echo ", text, strlen("echo ")) == 0) {
+        char *command = text + strlen("echo ");
+        char *first_arg = memchr2(command, '\'');
+
+        if (first_arg) {
+          char *second_qot = memchr2(first_arg + 1, '\'');
+          if (second_qot) {
+            *second_qot = '\0';
+            char *data = first_arg + 1;
+            char *filename = second_qot + 2;
+
+            while (*filename == ' ')
+              filename++;
+
+            if (*filename != '\0') {
+              insert_data(filename, data);
+              printf("Inserted Data to %s\n", filename);
+            } else {
+              printf("Error! No filename provided\n");
+            }
+          } else {
+            printf("Error! Missing closing quote\n");
+          }
+        } else {
+          printf("Error! Invalid echo format\n");
+        }
+      }
+
       else if (memcmp("mfile", text, 5) == 0) {
         slice(text, filename, 6, strlen(text));
-        create_file(vfs, filename, "");
+        create_file(filename, "");
         printf("Done created %s\n", filename);
       }
 
