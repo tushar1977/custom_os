@@ -88,6 +88,7 @@ void insert_data(char *name, char *data) {
   if (f->data != NULL) {
     free(f->data);
   }
+  f->name = name;
   f->data = (char *)malloc(strlen(data) + 1);
 
   memcpy(f->data, data, strlen(data));
@@ -98,5 +99,7 @@ void display_file_content(char *name) {
   File *f = check_file(name);
   if (f != NULL) {
     printf("%s\n", f->data);
+  } else {
+    printf("File not found %s\nf", name);
   }
 }

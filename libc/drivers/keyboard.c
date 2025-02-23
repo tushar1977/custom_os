@@ -1,5 +1,6 @@
 #include "../include/keyboard.h"
 #include "../include/idt.h"
+#include "../include/memory.h"
 #include "../include/stdio.h"
 #include "../include/string.h"
 #include "../include/tty.h"
@@ -47,9 +48,16 @@ const uint32_t NONE = 0xFFFFFFFF - 30;
 const uint32_t ALTGR = 0xFFFFFFFF - 31;
 const uint32_t NUMLCK = 0xFFFFFFFF - 32;
 
-char *filename = "";
-void slice(const char *str, char *result, size_t start, size_t end) {
-  memcpy(result, str + start, end - start + 1);
+char *slice(const char *str, size_t start, size_t end) {
+  size_t len = end - start;
+  char *result = (char *)malloc(len + 1);
+  if (!result) {
+    return NULL;
+  }
+  memcpy(result, str + start, len);
+  result[len] = '\0';
+
+  return result;
 }
 const uint32_t lowercase[128] = {
     UNKNOWN, ESC,     '1',     '2',     '3',     '4',     '5',     '6',
@@ -159,19 +167,31 @@ void keyboardHandler(struct InterruptRegisters *regs) {
               printf("Inserted Data to %s\n", filename);
             } else {
               printf("Error! No filename provided\n");
+              free(second_qot);
             }
           } else {
             printf("Error! Missing closing quote\n");
+
+            free(second_qot);
           }
         } else {
           printf("Error! Invalid echo format\n");
         }
+
+        free(first_arg);
+      }
+
+      else if (memcmp("cat ", text, strlen("cat ")) == 0) {
+        char *filename = slice(text, strlen("cat "), strlen(text));
+        display_file_content(filename);
+
       }
 
       else if (memcmp("mfile", text, 5) == 0) {
-        slice(text, filename, 6, strlen(text));
+        char *filename = slice(text, 6, strlen(text));
         create_file(filename, "");
         printf("Done created %s\n", filename);
+        free(filename);
       }
 
       else if (scanCode != 28) {

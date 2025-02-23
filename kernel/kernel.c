@@ -31,7 +31,7 @@ void test_vfs() {
   printf("Loading data for file\n");
   display_file_content(name);
 
-  printf("Inserting data into file");
+  printf("Inserting data into file\n");
   insert_data(name, new_data);
 
   printf("Loading data for file\n");
