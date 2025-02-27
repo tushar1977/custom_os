@@ -26,6 +26,11 @@ File *check_file(char *name) {
 }
 
 void create_file(const char *filename, const char *data) {
+  if (!vfs) {
+    printf("Error: VFS not initialized\n");
+    return;
+  }
+
   if (vfs->file_count >= MAX_FILES) {
     printf("VFS is full. Cannot create more files.\n");
     return;
@@ -38,15 +43,23 @@ void create_file(const char *filename, const char *data) {
 
   file->data = (char *)malloc(data_len + 1);
 
+  if (!file->data) {
+    printf("Memory allocation failed for file: %s\n", filename);
+    free(file->data);
+    return;
+  }
+
   memcpy(file->name, filename, name_len + 1);
   file->name[MAX_FILENAME - 1] = '\0';
 
   memcpy(file->data, data, data_len + 1);
-
+  printf("%s\n", filename);
+  printf("%s\n", file->name);
   file->size = data_len;
   vfs->file_count++;
-}
 
+  printf("File created %s\n", filename);
+}
 const char *read_file(const char *filename) {
   for (int i = 0; i < vfs->file_count; i++) {
     if (strcmp(vfs->file[i].name, filename) == 0) {
@@ -59,47 +72,75 @@ const char *read_file(const char *filename) {
 }
 
 void delete_file(const char *filename) {
-
-  File replace;
-
-  for (int i = 0; i < vfs->file_count; i++) {
-    if (strcmp(vfs->file[i].name, filename) == 0) {
-      vfs->file[i] = replace;
-      vfs->file_count--;
-    }
-  }
-}
-
-void display_files() {
-
-  for (int i = 0; i < vfs->file_count; i++) {
-    printf("%s", vfs->file[i].name);
-    printf(" ");
-  }
-}
-void insert_data(char *name, char *data) {
-
-  File *f = check_file(name);
-  if (f == NULL) {
-    printf("File not Found \n");
+  if (!vfs) {
+    printf("Error: VFS not initialized\n");
     return;
   }
 
-  if (f->data != NULL) {
-    free(f->data);
+  for (int i = 0; i < vfs->file_count; i++) {
+    if (strcmp(vfs->file[i].name, filename) == 0) {
+      free(vfs->file[i].name);
+      free(vfs->file[i].data);
+
+      for (int j = i; j < vfs->file_count - 1; j++) {
+        vfs->file[j] = vfs->file[j + 1];
+      }
+      vfs->file_count--;
+      return;
+    }
   }
-  f->name = name;
+
+  printf("File %s not found\n", filename);
+}
+
+void display_files() {
+  if (!vfs) {
+    printf("Error: VFS not initialized\n");
+    return;
+  }
+
+  printf("Files in VFS (%d/%d):\n", vfs->file_count, MAX_FILES);
+
+  for (int i = 0; i < vfs->file_count; i++) {
+    printf("%s\n", vfs->file[i].name);
+  }
+
+  printf("----------------------------------------\n");
+}
+
+void insert_data(char *name, char *data) {
+
+  if (!vfs) {
+    printf("Error: VFS not initialized\n");
+    return;
+  }
+
+  File *f = check_file(name);
+  if (f == NULL) {
+    create_file(name, data);
+    return;
+  }
+
+  free(f->data);
   f->data = (char *)malloc(strlen(data) + 1);
 
-  memcpy(f->data, data, strlen(data));
+  if (!f->data) {
+    printf("Memory allocation failed for data insertion.\n");
+    return;
+  }
+  memcpy(f->data, data, strlen(data) + 1);
 }
 
 void display_file_content(char *name) {
+  if (vfs == NULL) {
+    printf("VFS not initialized\n");
+    return;
+  }
 
   File *f = check_file(name);
-  if (f != NULL) {
+  if (f != NULL && f->data != NULL) {
     printf("%s\n", f->data);
   } else {
-    printf("File not found %s\nf", name);
+    printf("File not found: %s\n", name);
   }
 }

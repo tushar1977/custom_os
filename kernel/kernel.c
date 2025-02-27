@@ -13,29 +13,18 @@
 
 void test_vfs() {
 
+  init_vfs();
   Spinlock file_lock;
   atomic_flag_clear(&file_lock.flag);
-  char *name = "tushar.txt";
-  char *data = "this is test data \n"
-               "!@#$%^&*()_+-=[]{};':\"\\|,.<>/\n?aBcDeFgHiJkLmNoPqRsTuVwXyZ";
+  char *test_name = "test.txt";
+  char *data = "ttttt";
 
-  char *new_data = "fjjjjjjjffjffirr\njdjhrnfn2i78930;";
-
-  kstatusf("Creating file: tuhsar.txt..\n");
+  printf("Creating file: tuhsar.txt..\n");
   spinlock_aquire(&file_lock);
-  create_file(name, data);
+  create_file(test_name, data);
   spinlock_release(&file_lock);
 
-  syscall_init();
-
-  printf("Loading data for file\n");
-  display_file_content(name);
-
-  printf("Inserting data into file\n");
-  insert_data(name, new_data);
-
-  printf("Loading data for file\n");
-  display_file_content(name);
+  display_file_content(test_name);
 }
 
 void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
@@ -63,7 +52,6 @@ void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
 
   kstatusf("Virtual File System Initialized..\n");
 
-  init_vfs();
   test_vfs();
   kstatusf("Virtual File System is tested !!!!..\n");
 

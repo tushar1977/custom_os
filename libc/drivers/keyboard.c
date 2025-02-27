@@ -56,7 +56,6 @@ char *slice(const char *str, size_t start, size_t end) {
   }
   memcpy(result, str + start, len);
   result[len] = '\0';
-
   return result;
 }
 const uint32_t lowercase[128] = {
@@ -144,7 +143,7 @@ void keyboardHandler(struct InterruptRegisters *regs) {
 
       else if (strcmp("ls", text) == 0) {
         printf("__FILES__\n");
-        display_files(vfs);
+        display_files();
         printf("\n");
       }
 
@@ -179,16 +178,19 @@ void keyboardHandler(struct InterruptRegisters *regs) {
         }
 
         free(first_arg);
+      } else if (memcmp("cat", text, strlen("cat")) == 0) {
+        char *filename = NULL;
+        filename = slice(text, strlen("cat") + 1, strlen(text));
+        if (filename) {
+          display_file_content(filename);
+          free(filename);
+        } else {
+          printf("Error: Could not process filename.\n");
+        }
       }
 
-      else if (memcmp("cat ", text, strlen("cat ")) == 0) {
-        char *filename = slice(text, strlen("cat "), strlen(text));
-        display_file_content(filename);
-
-      }
-
-      else if (memcmp("mfile", text, 5) == 0) {
-        char *filename = slice(text, 6, strlen(text));
+      else if (memcmp("mfile", text, strlen("mfile")) == 0) {
+        char *filename = slice(text, strlen("mfile") + 1, strlen(text));
         create_file(filename, "");
         printf("Done created %s\n", filename);
         free(filename);
