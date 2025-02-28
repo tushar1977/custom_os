@@ -26,4 +26,6 @@ void *sbrk(size_t size);
 int cbrk(void *addr);
 
 void *calloc(size_t n, size_t size);
+
+void *realloc(void *ptr, size_t size);
 #endif // MEMORY_H
