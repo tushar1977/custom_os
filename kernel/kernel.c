@@ -12,19 +12,9 @@
 #include "include/vfs.h"
 
 void test_vfs() {
-
   init_vfs();
-  Spinlock file_lock;
-  atomic_flag_clear(&file_lock.flag);
-  char *test_name = "test.txt";
-  char *data = "ttttt";
 
-  printf("Creating file: tuhsar.txt..\n");
-  spinlock_aquire(&file_lock);
-  create_file(test_name, data);
-  spinlock_release(&file_lock);
-
-  display_file_content(test_name);
+  create_file("test.txt", "Hello, VFS!", VREG);
 }
 
 void kernel_main(uint32_t magic, struct multiboot_info *bootInfo) {
