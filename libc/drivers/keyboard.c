@@ -4,7 +4,6 @@
 #include "../include/stdio.h"
 #include "../include/string.h"
 #include "../include/tty.h"
-#include "../include/vfs.h"
 #include "../include/vga.h"
 #include "stdint.h"
 #include <stdbool.h>
@@ -139,61 +138,6 @@ void keyboardHandler(struct InterruptRegisters *regs) {
 
       if (strcmp("clear", text) == 0) {
         Reset();
-      }
-
-      else if (strcmp("ls", text) == 0) {
-        printf("__FILES__\n");
-        display_files();
-        printf("\n");
-      }
-
-      else if (memcmp("echo ", text, strlen("echo ")) == 0) {
-        char *command = text + strlen("echo ");
-        char *first_arg = memchr2(command, '\'');
-
-        if (first_arg) {
-          char *second_qot = memchr2(first_arg + 1, '\'');
-          if (second_qot) {
-            *second_qot = '\0';
-            char *data = first_arg + 1;
-            char *filename = second_qot + 2;
-
-            while (*filename == ' ')
-              filename++;
-
-            if (*filename != '\0') {
-              insert_data(filename, data);
-              printf("Inserted Data to %s\n", filename);
-            } else {
-              printf("Error! No filename provided\n");
-              free(second_qot);
-            }
-          } else {
-            printf("Error! Missing closing quote\n");
-
-            free(second_qot);
-          }
-        } else {
-          printf("Error! Invalid echo format\n");
-        }
-
-        free(first_arg);
-      } else if (memcmp("cat", text, strlen("cat")) == 0) {
-        char *filename = NULL;
-        filename = slice(text, strlen("cat") + 1, strlen(text));
-        if (filename) {
-          display_file_content(filename);
-          free(filename);
-        } else {
-          printf("Error: Could not process filename.\n");
-        }
-      }
-
-      else if (memcmp("mfile", text, strlen("mfile")) == 0) {
-        char *filename = slice(text, strlen("mfile") + 1, strlen(text));
-        create_file(filename, "");
-        printf("Done created %s\n", filename);
-        free(filename);
       }
 
       else if (scanCode != 28) {

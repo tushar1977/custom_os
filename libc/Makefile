@@ -41,6 +41,7 @@ string/memcpy.o \
 fs/vfs.o \
 mem/free.o \
 mem/malloc.o \
+mem/realloc.o \
 mem/paging.o \
 mem/calloc.o \
 processor/spinlock.o \

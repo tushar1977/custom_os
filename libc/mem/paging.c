@@ -1,5 +1,7 @@
 #include "../include/paging.h"
+
 #include "../include/multiboot.h"
+#include "../include/string.h"
 #include "../include/util.h"
 #include "stdint.h"
 #include "stdio.h"

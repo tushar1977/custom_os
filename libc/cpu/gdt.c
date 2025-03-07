@@ -1,5 +1,7 @@
 #include "../include/gdt.h"
+
 #include "../include/stdio.h"
+#include "../include/string.h"
 #include "../include/util.h"
 #include <stdint.h>
 #include <stdio.h>

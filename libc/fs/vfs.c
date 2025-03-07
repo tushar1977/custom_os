@@ -10,27 +10,74 @@
 
 VFS *vfs = NULL;
 void init_vfs() {
+  vfs = (VFS *)malloc(sizeof(VFS));
+  if (!vfs) {
+    printf("Failed to allocate memory for VFS.\n");
+    return;
+  }
 
-  // VFS
+  vfs->superblock =
+      (struct myfs_superblock *)malloc(sizeof(struct myfs_superblock));
+  if (!vfs->superblock) {
+    printf("Failed to allocate memory for superblock.\n");
+    free(vfs);
+    return;
+  }
+
+  for (int i = 0; i < MAX_FILES; i++) {
+    vfs->inode_table[i] =
+        (struct myfs_inode *)malloc(sizeof(struct myfs_inode));
+    if (!vfs->inode_table[i]) {
+      printf("Failed to allocate memory for inode table.\n");
+      for (int j = 0; j < i; j++) {
+        free(vfs->inode_table[j]);
+      }
+      free(vfs->superblock);
+      free(vfs);
+      return;
+    }
+  }
+
   vfs->root = (Directory *)malloc(sizeof(Directory));
+  if (!vfs->root) {
+    printf("Failed to allocate memory for root directory.\n");
+    for (int i = 0; i < MAX_FILES; i++) {
+      free(vfs->inode_table[i]);
+    }
+    free(vfs->superblock);
+    free(vfs);
+    return;
+  }
+
   vfs->root->files = (File *)malloc(INITIAL_CAPACITY * sizeof(File));
-  memcpy(vfs->root->name, "root", MAX_FILENAME);
+  if (!vfs->root->files) {
+    printf("Failed to allocate memory for root files.\n");
+    free(vfs->root);
+    for (int i = 0; i < MAX_FILES; i++) {
+      free(vfs->inode_table[i]);
+    }
+    free(vfs->superblock);
+    free(vfs);
+    return;
+  }
+
+  memcpy(vfs->root->name, "root", strlen("root"));
   vfs->root->file_count = 0;
   vfs->root->capacity = INITIAL_CAPACITY;
   vfs->total_files = 0;
   vfs->total_size = 0;
 
-  // Superblocks
-  vfs->superblock.magic = MYFS_MAGIC;
-  vfs->superblock.inode_count = MAX_FILES;
-  vfs->superblock.root_inode = 0;
-  vfs->superblock.free_blocks = MAX_DATABLOCKS;
-  vfs->superblock.block_size = BLOCK_SIZE;
+  vfs->superblock->magic = MYFS_MAGIC;
+  vfs->superblock->inode_count = MAX_FILES;
+  vfs->superblock->root_inode = 0;
+  vfs->superblock->free_blocks = MAX_DATABLOCKS;
+  vfs->superblock->block_size = BLOCK_SIZE;
 
   for (int i = 0; i < MAX_FILES; i++) {
-    vfs->inode_table[i].mode = 0;
-    vfs->inode_table[i].size = 0;
-    memset(vfs->inode_table[i].blocks, -1, sizeof(vfs->inode_table[i].blocks));
+    vfs->inode_table[i]->mode = 0;
+    vfs->inode_table[i]->size = 0;
+    memset(vfs->inode_table[i]->blocks, -1,
+           sizeof(vfs->inode_table[i]->blocks));
   }
 
   for (int i = 0; i < MAX_DATABLOCKS; i++) {
@@ -39,7 +86,6 @@ void init_vfs() {
 
   printf("VFS initialized successfully.\n");
 }
-
 int create_file(const char *name, const char *data, enum vtype VTYPE) {
 
   if (VTYPE == -1) {
@@ -54,14 +100,13 @@ int create_file(const char *name, const char *data, enum vtype VTYPE) {
 
   int inode_num = -1;
   for (int i = 0; i < MAX_FILES; i++) {
-    if (vfs->inode_table[i].mode == 0) {
+    if (vfs->inode_table[i]->mode == 0) {
       inode_num = i;
       break;
     }
   }
 
   if (inode_num == -1) {
-    fprintf(stderr, "Nofree inodes available.\n");
     return -1;
   }
 
@@ -74,9 +119,9 @@ int create_file(const char *name, const char *data, enum vtype VTYPE) {
     }
   }
 
-  vfs->inode_table[inode_num].mode = 0644;
-  vfs->inode_table[inode_num].size = strlen(data);
-  vfs->inode_table[inode_num].blocks[0] = block_num;
+  vfs->inode_table[inode_num]->mode = 0644;
+  vfs->inode_table[inode_num]->size = strlen(data);
+  vfs->inode_table[inode_num]->blocks[0] = block_num;
 
   memcpy(vfs->data_blocks[block_num].data, data, BLOCK_SIZE);
 
@@ -89,8 +134,8 @@ int create_file(const char *name, const char *data, enum vtype VTYPE) {
   vfs->total_files++;
   vfs->total_size += strlen(data);
 
-  vfs->superblock.free_blocks--;
-  vfs->superblock.inode_count--;
+  vfs->superblock->free_blocks--;
+  vfs->superblock->inode_count--;
 
   printf("File '%s' created successfully (inode: %d, block: %d).\n", name,
          inode_num, block_num);
@@ -99,19 +144,17 @@ int create_file(const char *name, const char *data, enum vtype VTYPE) {
 
 const char *read_file(const char *name) {
   if (!vfs || !vfs->root) {
-    fprintf(stderr, "VFS not initialized.\n");
     return NULL;
   }
 
   for (int i = 0; i < vfs->root->file_count; i++) {
     if (strcmp(vfs->root->files[i].name, name) == 0) {
       uint32_t inode_number = vfs->root->files[i].inode_number;
-      uint32_t block_number = vfs->inode_table[inode_number].blocks[0];
+      uint32_t block_number = vfs->inode_table[inode_number]->blocks[0];
       return vfs->data_blocks[block_number].data;
     }
   }
 
-  fprintf(stderr, "File '%s' not found.\n", name);
   return NULL;
 }
 
@@ -122,25 +165,25 @@ int delete_file(const char *name) {
       uint32_t inode_num = vfs->root->files[i].inode_number;
 
       for (int j = 0; j < MAX_BLOCK_NUMBER; j++) {
-        uint32_t blocknum = vfs->inode_table[inode_num].blocks[j];
+        uint32_t blocknum = vfs->inode_table[inode_num]->blocks[j];
         if (blocknum != (uint32_t)-1) {
           memset(vfs->data_blocks[blocknum].data, 0, BLOCK_SIZE);
-          vfs->superblock.free_blocks++;
+          vfs->superblock->free_blocks++;
         }
       }
-      vfs->inode_table[inode_num].mode = 0;
-      vfs->inode_table[inode_num].size = 0;
-      memset(vfs->inode_table[inode_num].blocks, -1,
-             sizeof(vfs->inode_table[inode_num].blocks));
+      vfs->inode_table[inode_num]->mode = 0;
+      vfs->inode_table[inode_num]->size = 0;
+      memset(vfs->inode_table[inode_num]->blocks, -1,
+             sizeof(vfs->inode_table[inode_num]->blocks));
 
-      vfs->superblock.inode_count++;
+      vfs->superblock->inode_count++;
       for (int j = i; j < vfs->root->file_count - 1; j++) {
         vfs->root->files[j] = vfs->root->files[j + 1];
       }
 
       vfs->root->file_count--;
       vfs->total_files--;
-      vfs->total_size -= vfs->inode_table[inode_num].size;
+      vfs->total_size -= vfs->inode_table[inode_num]->size;
 
       printf("File '%s' deleted successfully.\n", name);
       return 0;
@@ -164,7 +207,7 @@ int create_directory(const char *name) {
 
   int inode_number = -1;
   for (int i = 0; i < MAX_FILES; i++) {
-    if (vfs->inode_table[i].mode == 0) {
+    if (vfs->inode_table[i]->mode == 0) {
       inode_number = i;
       break;
     }
@@ -172,11 +215,10 @@ int create_directory(const char *name) {
 
   Directory *dir = (Directory *)malloc(sizeof(Directory));
   if (!dir) {
-    perror("Failed to allocate memory for directory");
     return -1;
   }
 
-  strncpy(dir->name, name, MAX_FILENAME - 1);
+  memcpy(dir->name, name, MAX_FILENAME - 1);
   dir->name[MAX_FILENAME - 1] = '\0';
   dir->file_count = 0;
   dir->capacity = INITIAL_CAPACITY;
@@ -187,17 +229,16 @@ int create_directory(const char *name) {
     return -1;
   }
 
-  vfs->inode_table[inode_number].mode = 0755;
-  vfs->inode_table[inode_number].size = 0;
-  memset(vfs->inode_table[inode_number].blocks, -1,
-         sizeof(vfs->inode_table[inode_number].blocks));
+  vfs->inode_table[inode_number]->mode = 0755;
+  vfs->inode_table[inode_number]->size = 0;
+  memset(vfs->inode_table[inode_number]->blocks, -1,
+         sizeof(vfs->inode_table[inode_number]->blocks));
 
   if (vfs->root->file_count >= vfs->root->capacity) {
     vfs->root->capacity *= 2;
     vfs->root->files =
         (File *)realloc(vfs->root->files, vfs->root->capacity * sizeof(File));
     if (!vfs->root->files) {
-      perror("Failed to resize root directory files array");
       free(dir->files);
       free(dir);
       return -1;
@@ -205,14 +246,14 @@ int create_directory(const char *name) {
   }
 
   File *new_file = &vfs->root->files[vfs->root->file_count];
-  strncpy(new_file->name, name, MAX_FILENAME - 1);
+  memcpy(new_file->name, name, MAX_FILENAME - 1);
   new_file->name[MAX_FILENAME - 1] = '\0';
   new_file->inode_number = inode_number;
 
   vfs->root->file_count++;
   vfs->total_files++;
 
-  vfs->superblock.inode_count--;
+  vfs->superblock->inode_count--;
 
   printf("Directory '%s' created successfully (inode: %d).\n", name,
          inode_number);

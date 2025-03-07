@@ -1,7 +1,5 @@
 #include <stdint.h>
 
-void memset(void *dest, char var, uint32_t count);
-
 void outPortB(uint16_t port, uint8_t value);
 
 struct InterruptRegisters {
